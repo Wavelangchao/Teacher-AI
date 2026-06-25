@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>数学教师课后反馈系统</title>
+    <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-inner">
+            <div class="logo-area">
+                <div class="logo-icon">📐</div>
+                <div class="logo-text">
+                    <h1>数学教师课后反馈</h1>
+                    <span>Powered by 通义千问 AI</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-header" onclick="openStudentProfileModal()">👥 <span class="btn-text-full">学生档案</span><span class="btn-text-short">档案</span></button>
+                <button class="btn btn-header" onclick="openDiagnoseModal()">🔧 <span class="btn-text-full">系统诊断</span><span class="btn-text-short">诊断</span></button>
+                <button class="btn btn-header" onclick="openHistoryModal()">📋 <span class="btn-text-full">历史记录</span><span class="btn-text-short">历史</span></button>
+                <button class="btn btn-header btn-header-config" onclick="openConfigModal()">⚙️ <span class="btn-text-full">系统设置</span><span class="btn-text-short">设置</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main-container">
+        <!-- Left: Input Form -->
+        <div class="form-panel">
+            <div class="card">
+                <div class="card-header">
+                    <h3><span class="icon">✏️</span>反馈信息填写</h3>
+                    <span style="font-size:12px;color:var(--text-muted);">选择对应选项，AI将自动润色生成</span>
+                </div>
+                <div class="card-body">
+                    <!-- 教学场景（放最前面，方便先选择一对一还是班课） -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            🏫 教学场景
+                            <span class="hint">（选填，选择本次课的上课形式，选择小班课/大班课后将切换为多学生模式）</span>
+                        </label>
+                        <div class="picker-wrap" id="picker-teachingScene" data-id="teachingScene">
+                            <button type="button" class="picker-btn" onclick="togglePicker('teachingScene')">
+                                <span class="picker-btn-text">不指定（通用风格）</span>
+                                <span class="picker-arrow">▾</span>
+                            </button>
+                            <div class="picker-panel">
+                                <div class="picker-item" data-value="" onclick="selectPicker('teachingScene', '', '不指定（通用风格）')">不指定（通用风格）</div>
+                                <div class="picker-item" data-value="one_on_one" onclick="selectPicker('teachingScene', 'one_on_one', '一对一辅导')">一对一辅导 🧑‍🏫</div>
+                                <div class="picker-item" data-value="small_group" onclick="selectPicker('teachingScene', 'small_group', '小班课（2-5人）')">小班课（2-5人） 👥</div>
+                                <div class="picker-item" data-value="large_group" onclick="selectPicker('teachingScene', 'large_group', '大班课（6人以上）')">大班课（6人以上） 🏫</div>
+                                <div class="picker-item" data-value="online" onclick="selectPicker('teachingScene', 'online', '线上直播课')">线上直播课 💻</div>
+                                <div class="picker-item" data-value="exam_review" onclick="selectPicker('teachingScene', 'exam_review', '考前冲刺/复习课')">考前冲刺/复习课 📝</div>
+                                <div class="picker-item" data-value="holiday_camp" onclick="selectPicker('teachingScene', 'holiday_camp', '寒暑假集训营')">寒暑假集训营 🏕️</div>
+                            </div>
+                            <input type="hidden" id="teachingScene" value="">
+                        </div>
+                    </div>
+
+                    <!-- 一对一模式：学生姓名 + 水平等级 -->
+                    <div class="form-group" id="singleStudentGroup">
+                        <label class="form-label">
+                            👤 学生姓名 <span class="required">*</span>
+                            <span class="hint">（填写学生的名字）</span>
+                        </label>
+                        <div style="display:flex;gap:10px;align-items:center;">
+                            <input type="text" id="studentName" placeholder="请输入学生姓名" autocomplete="off" style="flex:1;">
+                            <div class="picker-wrap picker-wrap-sm" id="picker-studentLevel" data-id="studentLevel" style="width:140px;flex-shrink:0;">
+                                <button type="button" class="picker-btn" onclick="togglePicker('studentLevel')">
+                                    <span class="picker-btn-text">水平等级 *</span>
+                                    <span class="picker-arrow">▾</span>
+                                </button>
+                                <div class="picker-panel picker-panel-right">
+                                    <div class="picker-item" data-value="" onclick="selectPicker('studentLevel', '', '水平等级 *')">不指定</div>
+                                    <div class="picker-item" data-value="优秀" onclick="selectPicker('studentLevel', '优秀', '优秀 🌟')">优秀 🌟</div>
+                                    <div class="picker-item" data-value="良好" onclick="selectPicker('studentLevel', '良好', '良好 👍')">良好 👍</div>
+                                    <div class="picker-item" data-value="中等" onclick="selectPicker('studentLevel', '中等', '中等 😐')">中等 😐</div>
+                                    <div class="picker-item" data-value="薄弱" onclick="selectPicker('studentLevel', '薄弱', '薄弱 ⚠️')">薄弱 ⚠️</div>
+                                </div>
+                                <input type="hidden" id="studentLevel" value="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 学生年级选择器（一对一模和多学生模式共用） -->
+                    <div class="form-group" id="studentGradeRow">
+                        <label class="form-label">
+                            📚 学生年级
+                            <span class="hint">（选填，帮助AI了解学生的知识范围）</span>
+                        </label>
+                        <div class="picker-wrap" id="picker-studentGrade" data-id="studentGrade">
+                            <button type="button" class="picker-btn" onclick="togglePicker('studentGrade')">
+                                <span class="picker-btn-text">📚 学生年级（选填，帮助AI了解知识范围）</span>
+                                <span class="picker-arrow">▾</span>
+                            </button>
+                            <div class="picker-panel picker-panel-grade">
+                                <!-- 学段Tab切换 -->
+                                <div class="grade-tabs">
+                                    <button type="button" class="grade-tab active" onclick="switchGradeTab('primary', this)">🏫 小学</button>
+                                    <button type="button" class="grade-tab" onclick="switchGradeTab('junior', this)">📘 初中</button>
+                                    <button type="button" class="grade-tab" onclick="switchGradeTab('senior', this)">📙 高中</button>
+                                </div>
+                                <!-- 小学 -->
+                                <div class="grade-panel active" data-grade="primary">
+                                    <div class="grade-grid">
+                                        <button type="button" class="grade-item" data-value="小一" onclick="selectPicker('studentGrade', '小一', '一年级')">一年级</button>
+                                        <button type="button" class="grade-item" data-value="小二" onclick="selectPicker('studentGrade', '小二', '二年级')">二年级</button>
+                                        <button type="button" class="grade-item" data-value="小三" onclick="selectPicker('studentGrade', '小三', '三年级')">三年级</button>
+                                        <button type="button" class="grade-item" data-value="小四" onclick="selectPicker('studentGrade', '小四', '四年级')">四年级</button>
+                                        <button type="button" class="grade-item" data-value="小五" onclick="selectPicker('studentGrade', '小五', '五年级')">五年级</button>
+                                        <button type="button" class="grade-item" data-value="小六" onclick="selectPicker('studentGrade', '小六', '六年级')">六年级</button>
+                                    </div>
+                                </div>
+                                <!-- 初中 -->
+                                <div class="grade-panel" data-grade="junior">
+                                    <div class="grade-grid">
+                                        <button type="button" class="grade-item" data-value="初一" onclick="selectPicker('studentGrade', '初一', '初一')">初一</button>
+                                        <button type="button" class="grade-item" data-value="初二" onclick="selectPicker('studentGrade', '初二', '初二')">初二</button>
+                                        <button type="button" class="grade-item" data-value="初三" onclick="selectPicker('studentGrade', '初三', '初三')">初三</button>
+                                    </div>
+                                </div>
+                                <!-- 高中 -->
+                                <div class="grade-panel" data-grade="senior">
+                                    <div class="grade-grid">
+                                        <button type="button" class="grade-item" data-value="高一" onclick="selectPicker('studentGrade', '高一', '高一')">高一</button>
+                                        <button type="button" class="grade-item" data-value="高二" onclick="selectPicker('studentGrade', '高二', '高二')">高二</button>
+                                        <button type="button" class="grade-item" data-value="高三" onclick="selectPicker('studentGrade', '高三', '高三')">高三</button>
+                                    </div>
+                                </div>
+                                <!-- 底部清空 -->
+                                <div style="padding:8px 12px 4px;text-align:center;border-top:1px solid var(--border);margin-top:4px;">
+                                    <button type="button" class="grade-clear-btn" onclick="selectPicker('studentGrade', '', '📚 学生年级（选填）')">清除选择 ✕</button>
+                                </div>
+                            </div>
+                            <input type="hidden" id="studentGrade" value="">
+                        </div>
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">💡 选填：帮助AI了解学生的知识范围，避免在建议中推荐超纲方法。复习已学内容不算超纲。</div>
+                    </div>
+
+                    <!-- 多学生模式：小班课/大班课学生列表 -->
+                    <div class="form-group hidden" id="multiStudentGroup">
+                        <label class="form-label">
+                            👥 学生列表 <span class="required">*</span>
+                            <span class="hint">（逐一填写每位学生）</span>
+                        </label>
+                        <div id="studentList">
+                            <!-- 动态生成学生卡片 -->
+                        </div>
+                        <button type="button" class="btn-add-student" onclick="addStudentCard()">
+                            ➕ 添加学生
+                        </button>
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">💡 每个学生可单独设置水平等级。授课内容、作业、补充说明等公共信息统一填写。</div>
+                    </div>
+
+                    <!-- 评价维度（可折叠） -->
+                    <div class="form-group">
+                        <div class="form-label" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleDimensionCollapse()">
+                            <span>📊 课堂表现评价维度 <span class="hint">（点击选项即可选择，支持多选和选填）</span> <span id="dimensionStats" style="display:none;font-size:11px;color:var(--primary);font-weight:600;"></span></span>
+                            <span id="dimensionToggle" style="font-size:11px;color:var(--text-muted);">收起 ▲</span>
+                        </div>
+                        <div id="dimensionGridWrapper" style="transition:max-height 0.3s ease;overflow:hidden;">
+                            <div class="dimension-grid" id="dimensionGrid">
+                                <!-- 动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 快速模板 -->
+                    <div class="template-section">
+                        <div class="template-divider">
+                            <span class="template-divider-text">或者，使用快捷预设</span>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                            <span style="font-size:12px;color:var(--text-muted);">📋 一键套用常用评价组合，<b style="color:var(--warning);">会覆盖当前已选维度</b></span>
+                        </div>
+                        <div style="display:flex;flex-wrap:wrap;gap:8px;" id="templateBtns">
+                            <button class="btn-template" onclick="applyTemplateSafe('excellent')" title="适合课堂表现优秀的学生">🌟 表现优异</button>
+                            <button class="btn-template" onclick="applyTemplateSafe('average')" title="适合课堂表现中等的学生">👍 表现中等</button>
+                            <button class="btn-template" onclick="applyTemplateSafe('weak')" title="适合基础薄弱、需要加强的学生">📚 需要加强</button>
+                            <button class="btn-template" onclick="applyTemplateSafe('quick')" title="仅快速填写基础项（作业+听课状态）">⚡ 快速填写</button>
+                            <button class="btn-template btn-template-reset" onclick="clearAllDimensions()" title="清空所有已选维度">🔄 全部清空</button>
+                        </div>
+                    </div>
+
+                    <!-- 授课内容 -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            📖 授课内容 <span class="required">*</span>
+                            <span class="hint">（填写本次课堂讲授的知识点和内容）</span>
+                        </label>
+                        <textarea id="teachingContent" placeholder="例如：作业讲解，二次函数面积最值问题，课前考卷讲解&#10;或：一次函数与等腰直角三角形存在性问题(两动一定)&#10;或：因式分解提公因式法训练和平方差法" rows="3" oninput="updateTeachingCharCount()"></textarea>
+                        <div class="char-count" id="teachingCharCount" style="text-align:right;">已输入 0 字</div>
+                    </div>
+
+                    <!-- 布置作业 -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            📝 布置作业
+                            <span class="hint">（选填，填写本次布置的作业内容）</span>
+                        </label>
+                        <textarea id="homeworkAssign" placeholder="例如：二次函数面积问题习题一页半&#10;或：打印的题把剩余的习题做完" rows="2"></textarea>
+                    </div>
+
+                    <!-- 补充说明 -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            💬 补充说明
+                            <span class="hint">（选填，其他需要AI了解的特殊情况）</span>
+                        </label>
+                        <textarea id="customNote" placeholder="例如：孩子最近状态不太稳定，希望家长多关注&#10;或：本次课是期末复习，重点查漏补缺" rows="2"></textarea>
+                    </div>
+
+                    <!-- 生成按钮 -->
+                    <div class="generate-area">
+                        <div class="generate-options-row">
+                            <div class="generate-option-group">
+                                <span class="generate-option-label">💡 反馈字数：</span>
+                                <select id="wordCountRange" class="generate-option-select">
+                                    <option value="150-250">简短 150-250字</option>
+                                    <option value="200-400" selected>适中 200-400字（推荐）</option>
+                                    <option value="350-550">详细 350-550字</option>
+                                    <option value="500-800">长文 500-800字</option>
+                                </select>
+                                <span class="word-count-hint" id="wordCountHint" style="display:none;font-size:10px;color:var(--text-muted);white-space:nowrap;"></span>
+                            </div>
+                            <div class="generate-option-group">
+                                <span class="generate-option-label">📅 反馈日期：</span>
+                                <select id="feedbackMonth" class="generate-option-select generate-option-select-sm">
+                                    <option value="">月</option>
+                                </select>
+                                <span class="generate-option-unit">月</span>
+                                <select id="feedbackDay" class="generate-option-select generate-option-select-sm">
+                                    <option value="">日</option>
+                                </select>
+                                <span class="generate-option-unit">日</span>
+                            </div>
+                        </div>
+                        <button class="btn-generate" id="btnGenerate" onclick="generateFeedbackStream()">
+                            ✨ AI生成课后反馈
+                        </button>
+                        <button class="btn-generate hidden" id="btnStop" onclick="stopStreaming()" style="background:linear-gradient(135deg,#DC2626,#EF4444);box-shadow:0 4px 14px rgba(220,38,38,0.35);">
+                            ⏹ 停止生成
+                        </button>
+                        <div class="generating-hint hidden" id="generatingHint">
+                            <span class="spinner"></span> <span id="streamingText">AI正在生成中，请稍候...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Preview -->
+        <div class="preview-panel">
+            <div class="card" style="height: fit-content;">
+                <div class="card-header">
+                    <h3><span class="icon">📄</span>反馈预览</h3>
+                    <span id="modelBadge" style="font-size:11px;color:var(--text-muted);"></span>
+                </div>
+                <div class="card-body no-padding">
+                    <div class="preview-empty" id="previewEmpty">
+                        <div class="empty-icon">📭</div>
+                        <p>填写左侧信息后点击生成<br>AI将为您自动撰写课后反馈</p>
+                    </div>
+                    <div class="preview-content hidden" id="previewContent"></div>
+                </div>
+                <div class="stream-status hidden" id="streamStatus">
+                    <span class="pulse-dot"></span> <span id="streamStatusText">AI正在逐字生成中...</span>
+                    <span class="token-info" style="display:flex;align-items:center;gap:8px;">
+                        <span id="streamCharCount" style="font-size:11px;color:var(--text-muted);">0 字</span>
+                        <span id="streamTokenInfo" style="display:none;font-size:11px;color:var(--text-muted);">🎫 <span class="token-num" id="streamTokenCount">—</span> tokens</span>
+                        <span id="streamModelBadge" style="display:none;font-size:11px;color:var(--primary);background:#EEF2FF;padding:1px 6px;border-radius:8px;"></span>
+                    </span>
+                </div>
+                <div class="preview-meta hidden" id="previewMeta">
+                    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;">
+                        <span style="font-size:12px;color:var(--text-muted);">生成模型：</span>
+                        <span class="model-badge" id="previewModel"></span>
+                        <span style="font-size:12px;color:var(--text-muted);" id="previewTokenMeta"></span>
+                        <span style="font-size:12px;color:var(--text-muted);" id="previewCharCount"></span>
+                        <span style="margin-left:auto;font-size:12px;color:var(--text-muted);" id="previewTime"></span>
+                    </div>
+                </div>
+                <div class="preview-actions hidden" id="previewActions">
+                    <button class="btn btn-primary btn-sm" onclick="quickCopyFeedback()" style="flex:1;justify-content:center;">📋 一键复制全文</button>
+                    <button class="btn btn-outline btn-sm" onclick="shareToPlatform()" style="flex-shrink:0;color:var(--text);border-color:var(--border);">📤 分享</button>
+                    <button class="btn btn-outline btn-sm" onclick="regenerateFeedback()" style="flex-shrink:0;color:var(--text);border-color:var(--border);">🔄 重新生成</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Config Modal -->
+    <div class="modal-overlay hidden" id="configModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>⚙️ 系统设置</h3>
+                <button class="modal-close" onclick="closeConfigModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- 已保存的 Key 展示区域 -->
+                <div id="savedKeyInfo" class="hidden" style="margin-bottom:16px;padding:12px;background:#ECFDF5;border-radius:var(--radius-sm);border:1px solid #A7F3D0;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                        <span style="font-size:12px;font-weight:700;color:#065F46;">🔑 已保存的 API Key</span>
+                        <div style="display:flex;gap:6px;">
+                            <button class="btn btn-ghost btn-sm" onclick="verifyKey()" id="btnVerifyKey" style="font-size:11px;color:#059669;">🔄 验证</button>
+                            <button class="btn btn-ghost btn-sm" onclick="deleteApiKey()" id="btnDeleteKey" style="font-size:11px;color:#DC2626;">🗑 删除Key</button>
+                        </div>
+                    </div>
+                    <div style="font-size:20px;font-weight:700;color:#059669;font-family:monospace;letter-spacing:1px;" id="keyMaskDisplay">—</div>
+                    <div id="keyVerifyResult" style="font-size:11px;margin-top:4px;color:#64748B;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">API Key <span class="required">*</span></label>
+                    <input type="text" id="apiKey" placeholder="请输入千问API Key（sk-...）" autocomplete="off">
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">
+                        获取地址：<a href="https://dashscope.console.aliyun.com/apiKey" target="_blank" style="color:var(--primary);">阿里云百炼控制台</a>
+                        <span id="keyHint" style="color:#059669;display:none;"> · 已保存，仅切换模型无需重新输入</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">🤖 选择模型</label>
+                    <select id="modelSelect" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;">
+                        <optgroup label="—— 日常使用（稳定版） ——">
+                            <option value="qwen-turbo">Qwen-Turbo — 速度最快，成本最低，适合简单日常场景</option>
+                            <option value="qwen-plus">Qwen-Plus — 效果与速度均衡，适合大多数教学场景 ⭐推荐</option>
+                            <option value="qwen-max">Qwen-Max — 效果最佳，适合高质量要求的复杂反馈</option>
+                            <option value="qwen-long">Qwen-Long — 支持100万tokens长文本，适合批量处理</option>
+                        </optgroup>
+                        <optgroup label="—— 最新版本（自动跟进） ——">
+                            <option value="qwen-plus-latest">Qwen-Plus-Latest — 始终指向最新Plus版本</option>
+                            <option value="qwen-max-latest">Qwen-Max-Latest — 始终指向最新Max版本 🔥🔒需开通</option>
+                        </optgroup>
+                        <optgroup label="—— 新一代模型（Qwen3系列） ——">
+                            <option value="qwen3.6-flash">Qwen3.6-Flash — 新一代轻量模型，速度与性价比兼得</option>
+                            <option value="qwen3.7-plus">Qwen3.7-Plus — 最新Plus旗舰，推理能力全面升级</option>
+                        </optgroup>
+                    </select>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.5;">
+                        💡 <strong>选型建议：</strong>日常用 <strong>Qwen-Plus</strong>（均衡）；质量优先用 <strong>Qwen-Max</strong>；省钱批量用 <strong>Qwen-Turbo</strong>；尝鲜用 <strong>Qwen3.7-Plus</strong>。<br>
+                        🔒 标记的 <strong>Qwen-Max-Latest</strong> 需要在<a href="https://dashscope.console.aliyun.com/billing" target="_blank" style="color:var(--primary);">百炼控制台</a>单独开通权限后方可使用。模型列表：<a href="https://help.aliyun.com/zh/model-studio/getting-started/models" target="_blank" style="color:var(--primary);">官方文档</a>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Temperature（创造性）</label>
+                    <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7" style="width:100%;">
+                    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);">
+                        <span>0 — 更严谨</span>
+                        <span id="tempValue">0.7</span>
+                        <span>2 — 更创造</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">最大输出长度（tokens）</label>
+                    <input type="number" id="maxTokens" value="2000" min="100" max="6000" step="100" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;">
+                </div>
+                <button class="btn btn-primary" onclick="saveConfig()" style="width:100%;justify-content:center;padding:12px;">💾 保存配置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diagnose Modal -->
+    <div class="modal-overlay hidden" id="diagnoseModal">
+        <div class="modal" style="width:720px;max-height:85vh;display:flex;flex-direction:column;overflow-y:hidden;">
+            <div class="modal-header" style="flex-shrink:0;">
+                <h3>🔧 系统诊断</h3>
+                <button class="modal-close" onclick="closeDiagnoseModal()">✕</button>
+            </div>
+            <div class="card-body" id="diagnoseResult" style="flex:1;overflow-y:auto;min-height:0;">
+                <div style="text-align:center;padding:40px;color:var(--text-muted);">
+                    <span class="spinner" style="display:inline-block;"></span>
+                    <p style="margin-top:12px;">正在检测系统状态...</p>
+                </div>
+            </div>
+            <div style="padding:10px 20px;border-top:1px solid var(--border);text-align:right;flex-shrink:0;display:flex;gap:8px;justify-content:flex-end;">
+                <button class="btn btn-ghost btn-sm" onclick="window.open(window.location.origin + window.location.pathname.replace('index.html','') + 'api.php?action=diagnose', '_blank')" style="font-size:11px;">📋 查看原始诊断JSON</button>
+                <button class="btn btn-primary btn-sm" onclick="runDiagnose()">🔄 重新检测</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Profile Modal -->
+    <div class="modal-overlay hidden" id="studentProfileModal">
+        <div class="modal" style="width:680px;max-height:80vh;display:flex;flex-direction:column;overflow-y:hidden;">
+            <div class="modal-header" style="flex-shrink:0;">
+                <h3>👥 学生档案</h3>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <button class="btn-export" onclick="exportData('csv')" style="font-size:11px;">📥 导出全部CSV</button>
+                    <button class="modal-close" onclick="closeStudentProfileModal()">✕</button>
+                </div>
+            </div>
+            <div class="card-body no-padding" id="studentProfileWrapper" style="flex:1;overflow-y:auto;min-height:0;">
+                <div id="studentProfileList">
+                    <div style="text-align:center;padding:40px;color:var(--text-muted);">加载中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div class="modal-overlay hidden" id="historyModal">
+        <div class="modal" style="width:680px;max-height:80vh;display:flex;flex-direction:column;overflow-y:hidden;">
+            <div class="modal-header" style="flex-shrink:0;">
+                <h3>📋 历史反馈记录</h3>
+                <button class="modal-close" onclick="closeHistoryModal()">✕</button>
+            </div>
+            <!-- 搜索栏 -->
+            <div style="padding:10px 20px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;gap:8px;">
+                <input type="text" id="historySearch" placeholder="搜索学生姓名或授课内容..." 
+                       style="flex:1;padding:7px 12px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-xs);"
+                       onkeydown="if(event.key==='Enter')searchHistory()">
+                <button class="btn btn-primary btn-sm" onclick="searchHistory()" style="flex-shrink:0;">🔍 搜索</button>
+                <button class="btn btn-ghost btn-sm" onclick="clearHistorySearch()" style="flex-shrink:0;font-size:12px;">清除</button>
+            </div>
+            <div class="card-body no-padding" id="historyListWrapper" style="flex:1;overflow-y:auto;min-height:0;">
+                <div class="batch-bar hidden" id="batchBar">
+                    <input type="checkbox" class="history-checkbox" id="selectAllCheckbox" onclick="toggleSelectAll()" title="全选/取消全选">
+                    <span class="selected-count" id="selectedCount">已选 0 条</span>
+                    <span class="profile-filter-tag hidden" id="profileFilterTag" style="font-size:12px;color:var(--text-secondary);margin-left:4px;"></span>
+                    <button class="btn-cancel-select" onclick="cancelSelectMode()">取消选择</button>
+                    <button class="btn-batch-delete" id="btnBatchDelete" onclick="batchDeleteHistory()" disabled>🗑 批量删除</button>
+                    <button class="btn-export" onclick="exportData('csv')" style="margin-left:8px;font-size:11px;padding:5px 12px;background:white;border:1px solid var(--primary);color:var(--primary);border-radius:14px;cursor:pointer;font-weight:600;">📥 导出CSV</button>
+                    <button class="btn-profile-back hidden" id="btnProfileBack" onclick="goBackToStudentProfile()" style="margin-left:auto;font-size:11px;color:var(--primary);">👥 返回学生档案</button>
+                </div>
+                <div id="historyList">
+                    <div style="text-align:center;padding:40px;color:var(--text-muted);">加载中...</div>
+                </div>
+            </div>
+            <!-- 分页栏 -->
+            <div id="historyPagination" style="padding:8px 20px;border-top:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--text-muted);">
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Share Platform Modal -->
+    <div class="modal-overlay hidden" id="shareModal">
+        <div class="modal" style="width:420px;">
+            <div class="modal-header">
+                <h3>📤 分享反馈到</h3>
+                <button class="modal-close" onclick="closeShareModal()">✕</button>
+            </div>
+            <div class="modal-body" style="padding:24px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" id="shareOptions">
+                    <button class="share-target-btn" onclick="copyAndOpen('weixin')">
+                        <span class="share-icon" style="background:#07C160;">💚</span>
+                        <span class="share-label">微信</span>
+                        <span class="share-hint">复制后打开微信粘贴</span>
+                    </button>
+                    <button class="share-target-btn" onclick="copyAndOpen('wecom')">
+                        <span class="share-icon" style="background:#2B7DEC;">🏢</span>
+                        <span class="share-label">企业微信</span>
+                        <span class="share-hint">复制后打开企微粘贴</span>
+                    </button>
+                    <button class="share-target-btn" onclick="copyAndOpen('dingtalk')">
+                        <span class="share-icon" style="background:#0089FF;">📌</span>
+                        <span class="share-label">钉钉</span>
+                        <span class="share-hint">复制后打开钉钉粘贴</span>
+                    </button>
+                    <button class="share-target-btn" onclick="copyAndOpen('clipboard')">
+                        <span class="share-icon" style="background:#6B7280;">📋</span>
+                        <span class="share-label">复制全文</span>
+                        <span class="share-hint">手动选择平台粘贴</span>
+                    </button>
+                    <button class="share-target-btn" onclick="shareViaWebShare()" id="btnNativeShare" style="grid-column:1/-1;">
+                        <span class="share-icon" style="background:#4F46E5;">📲</span>
+                        <span class="share-label">系统分享</span>
+                        <span class="share-hint">调用手机/电脑原生分享菜单</span>
+                    </button>
+                </div>
+                <div id="shareCopiedHint" style="display:none;text-align:center;margin-top:16px;padding:12px;background:#ECFDF5;border-radius:var(--radius-sm);color:var(--success);font-size:13px;font-weight:600;">
+                    ✅ 已复制到剪贴板，快去粘贴发送吧！
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部操作栏 -->
+    <div class="bottom-bar">
+        <button class="btn-next-student" id="btnNextStudent" onclick="resetForNextStudent()">
+            ➡️ 生成下一个
+        </button>
+        <button class="btn-refresh-cache" onclick="forceRefresh()" title="清理缓存并强制刷新，确保加载最新版本">
+            🔄 强制刷新（同步最新版）
+        </button>
+    </div>
+
+    <script src="js/dimensions.js?v=2"></script>
+    <script src="js/utils.js?v=2"></script>
+    <script src="js/main.js?v=2"></script>
+</body>
+</html>

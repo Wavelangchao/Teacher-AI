@@ -1,0 +1,17 @@
+# Runtime data
+data/
+
+# Local environment
+.env
+.env.*
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Temporary files
+*.log
+*.tmp
+*.bak
